@@ -8,7 +8,7 @@ close all
 % Läser in en krypterad fil och gör den till
 % stora bokstäver samt konverterar dem till ASCII
 
-fid = fopen('krypterad3.txt','rt');
+fid = fopen('krypterad1.txt','rt');
 textOriginal = fscanf(fid,'%c',Inf);
 textUpper = upper(textOriginal);
 textAsc = double(textUpper);
@@ -36,36 +36,10 @@ for k = 1:length(throw)
     throw(k) = (throw(k) - 69);
 end
 
-rullning = [];
+rullningar = [];
 for k = 1:length(throw)
-    rullning = [rullning throw(k)];
+    rullningar = [rullningar throw(k)];
 end
-
-% skapar en matris med nollor som har lika många rader som antal rullningar
-% pre-allocation FTW
-dek = zeros(length(rullning), length(textAsc));
-
-% huvud-loopen håller på tills jag har slut på rullningar att försöka men
-% loopen inuti kör hela texten, där den då byter ut ASCII i originaltexten
-% mot ASCII ifrån mina rullningar, if-else och det är för att de rullar
-% över från Z till B t.ex. och hade fått en ASCII som ej stämde.
-i = 1;
-while i <= length(rullning)
-    for k = 1:length(textAsc)
-        if textAsc(k)>64 && textAsc(k)<91%rullar bara om värdet motsvarar en versal bokstav.
-          dek(i,k) = textAsc(k) - rullning(i); % rullar bak k:te elementet på den raden som stämmer med den specifika rullningen
-          if dek(i,k) <= 64
-              dek(i,k) = dek(i,k) + 26;
-          elseif dek(i,k) > 90
-              dek(i,k) = dek(i,k) - 26;
-          elseif dek(i,k) == 32
-              dek(i,k) = 32;
-          end
-        end
-    end
-    i = i + 1;
-end
-
 textTestPaj = textTestPaj(find(textTestPaj~=32));
 
 throw=[];
@@ -88,4 +62,33 @@ for k = 1:10
 end
 
 pie(delar, labels)
-disp(char(dek))
+
+
+% huvud-loopen håller på tills jag har slut på rullningar att försöka men
+% loopen inuti kör hela texten, där den då byter ut ASCII i originaltexten
+% mot ASCII ifrån mina rullningar, if-else och det är för att de rullar
+% över från Z till B t.ex. och hade fått en ASCII som ej stämde.
+i = 1;
+
+disp('De rekommenderade, från mest troligt till minst, rullningarna är:')
+disp(rullningar)
+rullning=input('Hur många steg ska den rulla? ' );
+
+
+i = 1;
+while i <= length(rullning)
+    for k = 1:length(textAsc)
+        if textAsc(k)>64 && textAsc(k)<91%rullar bara om värdet motsvarar en versal bokstav.                               
+          textAsc(i,k) = textAsc(k) - rullning(i); % rullar bak k:te elementet på den raden som stämmer med den specifika rullningen
+          if textAsc(i,k) <= 64
+              textAsc(i,k) = textAsc(i,k) + 26;
+          elseif textAsc(i,k) > 90
+              textAsc(i,k) = textAsc(i,k) - 26;
+          end
+        end
+    end
+    i = i + 1;
+end
+
+
+disp(char(textAsc))
